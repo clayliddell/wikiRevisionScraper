@@ -1,0 +1,25 @@
+{
+    "name": "clayliddell/wikiWebScraper",
+    "description": "Wikipedia web scraper.",
+    "version": "0.0.1",
+    "homepage": "http://github.com/clayliddell/wikiWebScraper",
+    "time": "2017-5-12",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Clayton Liddell",
+            "email": "cbwliddell@gmail.com",
+            "homepage": "http://www.clayliddell.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "illuminate/database": "^5.4",
+        "clayliddell/rolling-curl": "^3.1.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    }
+}
