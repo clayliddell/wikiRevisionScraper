@@ -1,6 +1,6 @@
 {
     "name": "clayliddell/wikiWebScraper",
-    "description": "Wikipedia web scraper.",
+    "description": "Wikipedia Scraper written in PHP that recursively scrapes the provided category.",
     "version": "0.0.1",
     "homepage": "http://github.com/clayliddell/wikiWebScraper",
     "time": "2017-5-12",
