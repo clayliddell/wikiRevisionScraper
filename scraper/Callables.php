@@ -13,7 +13,7 @@
 
 	abstract class WIKI_SCRAPE_CALLBACKS
 	{
-		private static $arrayIndex = 0;
+		private static $proxyHostIndex = 0;
 
 		public static function GET_REQUEST_CONFIG ()
 		{
@@ -31,7 +31,7 @@
 
 				if (SCRAPE_CONFIG::PROXY_HOST !== null)
 				{
-					$options[CURLOPT_PROXY] = SCRAPE_CONFIG::PROXY_HOST[(self::$arrayIndex++ % 5)];
+					$options[CURLOPT_PROXY] = SCRAPE_CONFIG::PROXY_HOST[(self::$proxyHostIndex++ % 5)];
 				}
 				else
 					$options[CURLOPT_PROXY] = SCRAPE_CONFIG::PROXY_HOST;
