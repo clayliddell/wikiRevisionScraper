@@ -15,8 +15,12 @@
 	$rollingCurl = new RollingCurl();
 
 	$rollingCurl
-			->get(SCRAPE_CONFIG::SUB_CATEGORY_URL . SCRAPE_CONFIG::CATEGORY_ROOT_ID, null, null, ['id' => SCRAPE_CONFIG::CATEGORY_ROOT_ID, 'request_type' => SCRAPE_CONFIG::CATEGORY_REQUEST])
+			->get(SCRAPE_CONFIG::SUB_CATEGORY_URL . SCRAPE_CONFIG::CATEGORY_ROOT_ID,
+				  null,
+				  WIKI_SCRAPE_CALLBACKS::GET_REQUEST_CONFIG(),
+				  ['id' => SCRAPE_CONFIG::CATEGORY_ROOT_ID, 'request_type' => SCRAPE_CONFIG::CATEGORY_REQUEST])
 			->setCallback(['Scraper\WIKI_SCRAPE_CALLBACKS', 'DISTRIBUTOR_CALLBACK'])
 			->setSimultaneousLimit(5)
 			->execute();
+
 	echo "DONE!\n";

@@ -7,7 +7,6 @@
 	{
 		public static function create($id, $parentID, $pageID, $userID, $timestamp, $size)
 		{
-			echo $parentID . "\n";
 			Revision::create(['id'			  => $id,
 							  'parent_id'	  => $parentID,
 						  	  'page_id'		  => $pageID,

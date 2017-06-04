@@ -3,12 +3,12 @@
 
 	abstract class DB
 	{
-		const DRIVER 	= 'mysql';
-		const HOST 		= 'localhost';
-		const DATABASE 	= 'wikiScrape';
-		const USERNAME 	= 'root';
-		const PASSWORD 	= '';
-		const CHARSET 	= 'utf8';
-		const COLLATION = 'utf8_unicode_ci';
+		const DRIVER    = 'mysql';
+		const HOST      = 'localhost';
+		const DATABASE  = ''; 
+		const USERNAME  = '';
+		const PASSWORD  = '';
+		const CHARSET   = 'utf8mb4';
+		const COLLATION = 'utf8mb4_unicode_ci';
 		const PREFIX    = '';
 	}

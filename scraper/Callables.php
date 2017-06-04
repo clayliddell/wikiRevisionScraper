@@ -13,6 +13,33 @@
 
 	abstract class WIKI_SCRAPE_CALLBACKS
 	{
+		private static $arrayIndex = 0;
+
+		public static function GET_REQUEST_CONFIG ()
+		{
+			if (SCRAPE_CONFIG::CURL_OPTS !== null)
+				$options = SCRAPE_CONFIG::CURL_OPTS;
+			else
+				$options = array();
+
+			if (SCRAPE_CONFIG::PROXY_HOST !== null)
+			{
+				if (SCRAPE_CONFIG::PROXY_TYPE !== null)
+					$options[CURLOPT_PROXYTYPE] = SCRAPE_CONFIG::PROXY_TYPE;
+				else
+					$options[CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5;
+
+				if (SCRAPE_CONFIG::PROXY_HOST !== null)
+				{
+					$options[CURLOPT_PROXY] = SCRAPE_CONFIG::PROXY_HOST[(self::$arrayIndex++ % 5)];
+				}
+				else
+					$options[CURLOPT_PROXY] = SCRAPE_CONFIG::PROXY_HOST;
+			}
+
+			return $options;
+		}
+
 		private static function GET_CATEGORY_NAME ($category)
 		{
 			if (substr($category, 0, strlen(SCRAPE_CONFIG::CATEGORY_PREFIX)) == SCRAPE_CONFIG::CATEGORY_PREFIX)
@@ -35,7 +62,7 @@
 				$position = strpos($url, "&$continueParameter=");
 				
 				if ($position)
-					$url = substr($url, 0, $position) . $continueArray[$continueParameter];
+					$url = substr($url, 0, $position) . "&$continueParameter=" . $continueArray[$continueParameter];
 				else
 					$url = $url . "&$continueParameter=" . $continueArray[$continueParameter];
 			}
@@ -64,25 +91,28 @@
 			{
 				$continueURL = self::GET_CONTINUE_URL($request->getUrl(), SCRAPE_CONFIG::CATEGORY_REQUEST, $result['continue']);
 
-				$rollingCurl->get($continueURL, null, null, ['id' => $categoryID, 'request_type' => SCRAPE_CONFIG::CATEGORY_REQUEST]);
+				$rollingCurl->get($continueURL, null, WIKI_SCRAPE_CALLBACKS::GET_REQUEST_CONFIG(), ['id' => $categoryID, 'request_type' => SCRAPE_CONFIG::CATEGORY_REQUEST]);
 			}
 
 			$records = $result['query']['categorymembers'];
 
 			foreach ($records as $record)
 			{
-				$rollingCurl->get(SCRAPE_CONFIG::REVISION_URL . $record['pageid'], null, null, ['id' => $record['pageid'], 'request_type' => SCRAPE_CONFIG::REVISION_REQUEST]);
+				$rollingCurl->get(SCRAPE_CONFIG::REVISION_URL . $record['pageid'], null, WIKI_SCRAPE_CALLBACKS::GET_REQUEST_CONFIG(), ['id' => $record['pageid'], 'request_type' => SCRAPE_CONFIG::REVISION_REQUEST]);
 				
-				if ($record['ns'] == SCRAPE_CONFIG::PAGE_NS && !Pages::exists($record['pageid']))
+				if ($record['ns'] == SCRAPE_CONFIG::PAGE_NS)
 				{
-					Pages::create($record['pageid'], $record['title'], $categoryID);
+					if (!Pages::exists($record['pageid']))
+						Pages::create($record['pageid'], $record['title'], $categoryID);
 
-				} elseif ($record['ns'] == SCRAPE_CONFIG::CATEGORY_NS && !Categories::exists($record['pageid']))
+					$rollingCurl->get(SCRAPE_CONFIG::REVISION_URL . $record['pageid'], null, WIKI_SCRAPE_CALLBACKS::GET_REQUEST_CONFIG(), ['id' => $record['pageid'], 'request_type' => SCRAPE_CONFIG::REVISION_REQUEST]);
+
+				} elseif ($record['ns'] == SCRAPE_CONFIG::CATEGORY_NS)
 				{
-					Categories::create($record['pageid'], self::GET_CATEGORY_NAME($record['title']), $categoryID);
-
-					$rollingCurl->get(SCRAPE_CONFIG::SUB_CATEGORY_URL . $record['pageid'], null, null, ['id' => $record['pageid'], 'request_type' => SCRAPE_CONFIG::CATEGORY_REQUEST]);
-
+					if (!Categories::exists($record['pageid']))
+						Categories::create($record['pageid'], self::GET_CATEGORY_NAME($record['title']), $categoryID);
+					
+					$rollingCurl->get(SCRAPE_CONFIG::SUB_CATEGORY_URL . $record['pageid'], null, WIKI_SCRAPE_CALLBACKS::GET_REQUEST_CONFIG(), ['id' => $record['pageid'], 'request_type' => SCRAPE_CONFIG::CATEGORY_REQUEST]);
 				}
 			}
 		}
@@ -90,12 +120,11 @@
 		public static function REVISION_CALLBACK (Request $request, RollingCurl $rollingCurl, $pageID)
 		{
 			$result = json_decode($request->getResponseText(), true);
-
 			if (isset($result['continue']))
 			{
 				$continueURL = self::GET_CONTINUE_URL($request->getUrl(), SCRAPE_CONFIG::REVISION_REQUEST, $result['continue']);
 
-				$rollingCurl->get($continueURL, null, null, ['id' => $pageID, 'request_type' => SCRAPE_CONFIG::REVISION_REQUEST]);
+				$rollingCurl->get($continueURL, null, WIKI_SCRAPE_CALLBACKS::GET_REQUEST_CONFIG(), ['id' => $pageID, 'request_type' => SCRAPE_CONFIG::REVISION_REQUEST]);
 			}
 
 			$records = $result['query']['pages'][$pageID]['revisions'];
@@ -103,7 +132,7 @@
 			foreach ($records as $record)
 			{
 				if (!Revisions::exists($record['revid']))
-					Revisions::create($record['revid'], $record['parentid'], $pageID, $record['userid'], date("Y-m-d H:i:s", strtotime($record['timestamp'])), $record['size']);
+					Revisions::create($record['revid'], $record['parentid'], $pageID, ($record['userid'] ?? 0), date("Y-m-d H:i:s", strtotime($record['timestamp'])), $record['size']);
 
 				if (!Users::exists($record['userid']))
 					Users::create($record['userid'], $record['user']);
