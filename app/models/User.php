@@ -10,8 +10,8 @@
 		protected $table = 'Users';
 		protected $fillable = ['id','name'];
 		
-		public function page()
+		public function revisions()
 		{
-			$this->belongsTo('Models\Revision');
+			$this->hasMany('Models\Revision');
 		}
 	}

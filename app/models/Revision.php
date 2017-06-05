@@ -12,6 +12,11 @@
 
 		public function category()
 		{
+			$this->belongsTo('Models\Category');
+		}
+
+		public function page()
+		{
 			$this->belongsTo('Models\Page');
 		}
 
