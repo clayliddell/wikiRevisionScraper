@@ -1,9 +1,9 @@
 <?php
 	namespace App\Models;
 
-	use Illuminate\Database\Capsule\Manager as Capsule;
+	use \Illuminate\Database\Capsule\Manager as Capsule;
 	
-	use App\Includes\Config\DB;
+	use \App\Includes\Config\Database as DB;
 	
 	class Database
 	{

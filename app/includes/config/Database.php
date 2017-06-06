@@ -1,7 +1,7 @@
 <?php
 	namespace App\Includes\Config;
 
-	abstract class DB
+	abstract class Database
 	{
 		const DRIVER    = 'mysql';
 		const HOST      = 'localhost';

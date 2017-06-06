@@ -3,12 +3,12 @@
 
 	require_once('Callables.php');
 
-	use RollingCurl\RollingCurl;
-	use RollingCurl\Request;
+	use \RollingCurl\RollingCurl;
+	use \RollingCurl\Request;
 
-	use App\Models\Database;
+	use \App\Models\Database;
 
-	use App\Includes\Config\WIKI as SCRAPE_CONFIG;
+	use \App\Includes\Config\Scraper as SCRAPE_CONFIG;
 
 	new Database();
 

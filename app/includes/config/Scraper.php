@@ -1,7 +1,7 @@
 <?php
 	namespace App\Includes\Config;
 
-	abstract class WIKI
+	abstract class Scraper
 	{
 		/**
 	     * @var string

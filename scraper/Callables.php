@@ -1,15 +1,15 @@
 <?php
 	namespace Scraper;
 
-	use RollingCurl\RollingCurl;
-	use RollingCurl\Request;
+	use \RollingCurl\RollingCurl;
+	use \RollingCurl\Request;
 
-	use App\Controllers\Categories;
-	use App\Controllers\Pages;
-	use App\Controllers\Revisions;
-	use App\Controllers\Users;
+	use \App\Controllers\Categories;
+	use \App\Controllers\Pages;
+	use \App\Controllers\Revisions;
+	use \App\Controllers\Users;
 
-	use App\Includes\Config\WIKI As SCRAPE_CONFIG;
+	use App\Includes\Config\Scraper As SCRAPE_CONFIG;
 
 	abstract class WIKI_SCRAPE_CALLBACKS
 	{
@@ -17,22 +17,20 @@
 
 		public static function GET_REQUEST_CONFIG ()
 		{
-			if (SCRAPE_CONFIG::CURL_OPTS !== null)
+			if (!empty(SCRAPE_CONFIG::CURL_OPTS))
 				$options = SCRAPE_CONFIG::CURL_OPTS;
 			else
 				$options = array();
 
-			if (SCRAPE_CONFIG::PROXY_HOST !== null)
+			if (!empty(SCRAPE_CONFIG::PROXY_HOST))
 			{
-				if (SCRAPE_CONFIG::PROXY_TYPE !== null)
+				if (!empty(SCRAPE_CONFIG::PROXY_TYPE))
 					$options[CURLOPT_PROXYTYPE] = SCRAPE_CONFIG::PROXY_TYPE;
 				else
 					$options[CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5;
 
-				if (SCRAPE_CONFIG::PROXY_HOST !== null)
-				{
+				if (is_array(SCRAPE_CONFIG::PROXY_HOST))
 					$options[CURLOPT_PROXY] = SCRAPE_CONFIG::PROXY_HOST[(self::$proxyHostIndex++ % 5)];
-				}
 				else
 					$options[CURLOPT_PROXY] = SCRAPE_CONFIG::PROXY_HOST;
 			}
